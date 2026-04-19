@@ -11,3 +11,4 @@ dist
 coverage
 .playwright
 next-env.d.ts
+tsconfig.tsbuildinfo
