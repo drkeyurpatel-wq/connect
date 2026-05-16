@@ -1,8 +1,8 @@
 import { NextResponse, type NextRequest } from 'next/server';
 import { createServerClient, type CookieOptions } from '@supabase/ssr';
 
-const PUBLIC_PATHS = ['/login', '/auth/callback'];
-const PUBLIC_API_PREFIXES = ['/api/webhooks/', '/api/public/', '/api/health'];
+const PUBLIC_PATHS = ['/login', '/auth/callback', '/medhack', '/medhack/success'];
+const PUBLIC_API_PREFIXES = ['/api/webhooks/', '/api/public/', '/api/health', '/api/medhack/register'];
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
