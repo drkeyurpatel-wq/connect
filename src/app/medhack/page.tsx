@@ -301,20 +301,20 @@ export default function MedHackPage() {
     setSubmitting(true);
     try {
       const supabase = createClient();
-      const { error } = await supabase.from('mh_applications').insert({
-        name: form.name,
-        email: form.email,
-        phone: form.phone,
-        org: form.org,
-        github_url: form.github_url,
-        portfolio_url: form.portfolio_url || null,
-        project_desc: form.project_desc,
-        stack: form.stack,
-        track_pref: form.track_pref,
-        hardest_build: form.hardest_build,
-        why: form.why,
-        team_status: form.team_status,
-        team_members: form.team_members || null,
+      const { error } = await supabase.rpc('mh_submit_application', {
+        p_name: form.name,
+        p_email: form.email,
+        p_phone: form.phone,
+        p_org: form.org,
+        p_github_url: form.github_url,
+        p_portfolio_url: form.portfolio_url,
+        p_project_desc: form.project_desc,
+        p_stack: form.stack,
+        p_track_pref: form.track_pref,
+        p_hardest_build: form.hardest_build,
+        p_why: form.why,
+        p_team_status: form.team_status,
+        p_team_members: form.team_members,
       });
       if (error) {
         setSubmitting(false);
