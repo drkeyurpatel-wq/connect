@@ -3,20 +3,22 @@
 import { useState, useEffect } from 'react';
 import { createClient } from '@/lib/supabase/browser';
 
-const CSS = `  :root{
-    --bg:#0a0d17;
-    --bg-2:#0e1220;
-    --surface:rgba(255,255,255,0.04);
-    --card:rgba(255,255,255,0.045);
-    --border:rgba(255,255,255,0.08);
-    --border-2:rgba(255,255,255,0.15);
-    --text:#eef1f8;
-    --text-2:#9aa6bd;
-    --muted:#5c6880;
-    --accent:#ffb23e;          /* warm amber-gold */
-    --accent-2:#2dd4bf;        /* teal signal */
-    --accent-glow:rgba(255,178,62,0.22);
-    --warn:#2dd4bf;
+const CSS = `@import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500;1,9..144,600&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+  :root{
+    --bg:#FAF8F3;
+    --bg-2:#F1EEE6;
+    --surface:#FFFFFF;
+    --card:#FFFFFF;
+    --border:rgba(20,24,28,0.09);
+    --border-2:rgba(20,24,28,0.18);
+    --text:#15181C;
+    --text-2:#4A4F57;
+    --muted:#8B9098;
+    --accent:#0F4D3C;
+    --accent-deep:#0A3A2D;
+    --accent-glow:rgba(15,77,60,0.10);
+    --accent-tint:rgba(15,77,60,0.07);
+    --warn:#0F4D3C;
     --radius:16px;
     --maxw:1140px;
   }
@@ -25,13 +27,13 @@ const CSS = `  :root{
   body{
     background:var(--bg);
     color:var(--text);
-    font-family:'DM Sans',sans-serif;
+    font-family:'Plus Jakarta Sans',sans-serif;
     line-height:1.65;
     -webkit-font-smoothing:antialiased;
     overflow-x:hidden;
   }
-  h1,h2,h3,.display{font-family:'Space Grotesk',sans-serif;letter-spacing:-0.02em;line-height:1.1}
-  .mono{font-family:'JetBrains Mono',monospace}
+  h1,h2,h3,.display{font-family:'Fraunces',serif;letter-spacing:-0.01em;line-height:1.05;font-weight:600}
+  .mono{font-family:'Plus Jakarta Sans',sans-serif}
   a{color:inherit;text-decoration:none}
   .wrap{max-width:var(--maxw);margin:0 auto;padding:0 24px}
   .accent{color:var(--accent)}
@@ -40,72 +42,72 @@ const CSS = `  :root{
   nav{
     position:fixed;top:0;left:0;right:0;z-index:50;
     backdrop-filter:blur(14px);
-    background:rgba(10,16,20,0.72);
+    background:rgba(250,248,243,0.80);
     border-bottom:1px solid transparent;
-    transition:border-color .3s, background .3s;
+    transition:border-color .3s, background .3s, box-shadow .3s;
   }
-  nav.scrolled{border-bottom:1px solid var(--border);background:rgba(10,16,20,0.9)}
+  nav.scrolled{border-bottom:1px solid var(--border);background:rgba(250,248,243,0.92);box-shadow:0 1px 20px rgba(0,0,0,0.03)}
   .nav-inner{display:flex;align-items:center;justify-content:space-between;height:64px}
-  .logo{display:flex;align-items:center;gap:10px;font-family:'Space Grotesk';font-weight:700;font-size:19px}
-  .logo .dot{width:11px;height:11px;border-radius:3px;background:var(--accent);box-shadow:0 0 16px var(--accent-glow)}
-  .logo small{font-weight:500;color:var(--text-2);font-size:13px;font-family:'DM Sans'}
+  .logo{display:flex;align-items:center;gap:10px;font-weight:800;font-size:18px;letter-spacing:-0.3px}
+  .logo .dot{width:11px;height:11px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 4px var(--accent-tint)}
+  .logo small{font-weight:500;color:var(--text-2);font-size:13px;font-family:'Plus Jakarta Sans'}
   .nav-links{display:flex;align-items:center;gap:28px}
-  .nav-links a{color:var(--text-2);font-size:14px;font-weight:500;transition:color .2s}
-  .nav-links a:hover{color:var(--text)}
+  .nav-links a{color:var(--text-2);font-size:14px;font-weight:600;transition:color .2s}
+  .nav-links a:hover{color:var(--accent)}
   .btn{
     display:inline-flex;align-items:center;gap:8px;
-    font-family:'Space Grotesk';font-weight:600;font-size:14px;
+    font-family:'Plus Jakarta Sans';font-weight:700;font-size:14px;
     padding:11px 20px;border-radius:10px;cursor:pointer;border:none;
     transition:transform .2s, box-shadow .2s, background .2s;
   }
   .btn-primary{
-    background:linear-gradient(135deg,var(--accent),#f59425);
-    color:#1c1305;
+    background:var(--accent);
+    color:#fff;
     box-shadow:0 8px 24px -8px var(--accent-glow);
   }
-  .btn-primary:hover{transform:translateY(-2px);box-shadow:0 14px 32px -8px var(--accent-glow)}
+  .btn-primary:hover{transform:translateY(-2px);background:var(--accent-deep);box-shadow:0 14px 32px -8px var(--accent-glow)}
   .btn-ghost{background:transparent;border:1px solid var(--border-2);color:var(--text)}
-  .btn-ghost:hover{background:var(--surface);transform:translateY(-2px)}
+  .btn-ghost:hover{border-color:var(--accent);color:var(--accent);transform:translateY(-2px)}
   .btn-lg{padding:15px 28px;font-size:15px}
   @media(max-width:760px){.nav-links a:not(.btn){display:none}}
 
   /* ---------- HERO ---------- */
   header{position:relative;padding:150px 0 90px;overflow:hidden}
-  .glow{position:absolute;border-radius:50%;filter:blur(90px);opacity:.5;z-index:0;pointer-events:none}
-  .glow.g1{width:520px;height:520px;background:var(--accent);top:-180px;right:-120px;opacity:.16}
-  .glow.g2{width:420px;height:420px;background:var(--accent-2);bottom:-160px;left:-120px;opacity:.12}
-  .hero{position:relative;z-index:2;max-width:880px}
+  .glow{position:absolute;border-radius:50%;filter:blur(90px);z-index:0;pointer-events:none}
+  .glow.g1{width:560px;height:560px;background:var(--accent);top:-200px;right:-140px;opacity:.07}
+  .glow.g2{width:420px;height:420px;background:var(--accent);bottom:-180px;left:-140px;opacity:.05}
+  .hero{position:relative;z-index:2;max-width:900px}
   .pill{
     display:inline-flex;align-items:center;gap:9px;
-    background:var(--accent-glow);color:var(--accent);
-    border:1px solid rgba(255,178,62,0.30);
-    padding:7px 14px;border-radius:100px;font-size:12.5px;font-weight:600;
+    background:var(--accent-tint);color:var(--accent);
+    border:1px solid rgba(15,77,60,0.18);
+    padding:7px 14px;border-radius:100px;font-size:12.5px;font-weight:700;
     letter-spacing:.3px;margin-bottom:26px;
   }
-  .pill .live{width:7px;height:7px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 0 var(--accent);animation:pulse 2s infinite}
-  @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(255,178,62,.5)}70%{box-shadow:0 0 0 8px rgba(255,178,62,0)}100%{box-shadow:0 0 0 0 rgba(255,178,62,0)}}
-  header h1{font-size:clamp(36px,6.4vw,68px);font-weight:700;margin-bottom:22px}
-  header h1 .stroke{color:transparent;-webkit-text-stroke:1.4px var(--accent)}
-  .sub{font-size:clamp(17px,2.2vw,21px);color:var(--text-2);max-width:620px;margin-bottom:14px}
+  .pill .live{width:7px;height:7px;border-radius:50%;background:var(--accent);animation:pulse 2s infinite}
+  @keyframes pulse{0%{opacity:1}50%{opacity:.35}100%{opacity:1}}
+  header h1{font-size:clamp(38px,6.4vw,70px);font-weight:600;margin-bottom:22px}
+  header h1 .stroke{color:var(--accent);font-style:italic}
+  .sub{font-size:clamp(17px,2.2vw,21px);color:var(--text-2);max-width:640px;margin-bottom:14px;line-height:1.55}
   .meta-row{display:flex;flex-wrap:wrap;gap:14px;margin:30px 0 34px}
   .meta{display:flex;align-items:center;gap:9px;background:var(--surface);border:1px solid var(--border);padding:11px 16px;border-radius:12px;font-size:14px;font-weight:500}
-  .meta b{font-weight:600;color:var(--text)}
+  .meta b{font-weight:700;color:var(--text)}
   .meta span{color:var(--text-2)}
   .meta .ic{color:var(--accent)}
   .hero-cta{display:flex;flex-wrap:wrap;gap:14px}
 
   /* ---------- COUNTDOWN ---------- */
   .countdown{display:flex;gap:12px;margin-top:42px}
-  .cd-box{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:16px 8px;text-align:center;min-width:78px;flex:1;max-width:104px}
-  .cd-box .num{font-family:'Space Grotesk';font-size:32px;font-weight:700;color:var(--text);line-height:1}
-  .cd-box .lbl{font-size:11px;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-top:8px;font-weight:600}
+  .cd-box{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:16px 8px;text-align:center;min-width:78px;flex:1;max-width:104px;box-shadow:0 2px 10px rgba(0,0,0,0.02)}
+  .cd-box .num{font-family:'Fraunces',serif;font-size:34px;font-weight:600;color:var(--accent);line-height:1}
+  .cd-box .lbl{font-size:11px;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-top:8px;font-weight:700}
 
   /* ---------- SECTIONS ---------- */
   section{padding:84px 0;position:relative}
   section.alt{background:var(--bg-2);border-top:1px solid var(--border);border-bottom:1px solid var(--border)}
   .eyebrow{font-size:12px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--accent);margin-bottom:14px}
-  .sec-title{font-size:clamp(28px,4vw,42px);font-weight:700;margin-bottom:16px;max-width:680px}
-  .sec-intro{font-size:17px;color:var(--text-2);max-width:620px;margin-bottom:48px}
+  .sec-title{font-size:clamp(28px,4vw,42px);font-weight:600;margin-bottom:16px;max-width:720px}
+  .sec-intro{font-size:17px;color:var(--text-2);max-width:640px;margin-bottom:48px;line-height:1.6}
 
   /* reveal */
   .reveal{opacity:0;transform:translateY(28px);transition:opacity .7s ease,transform .7s ease}
@@ -118,19 +120,19 @@ const CSS = `  :root{
   .grid-2{grid-template-columns:repeat(auto-fit,minmax(320px,1fr))}
   .card{
     background:var(--card);border:1px solid var(--border);border-radius:var(--radius);
-    padding:26px;transition:transform .25s,border-color .25s,background .25s;position:relative;overflow:hidden;
+    padding:26px;transition:transform .25s,border-color .25s,box-shadow .25s;position:relative;overflow:hidden;
   }
-  .card:hover{transform:translateY(-3px);border-color:var(--border-2);background:rgba(255,255,255,0.055)}
-  .card .ic-box{width:46px;height:46px;border-radius:12px;background:var(--accent-glow);display:flex;align-items:center;justify-content:center;font-size:22px;margin-bottom:18px}
-  .card h3{font-size:19px;font-weight:600;margin-bottom:9px}
+  .card:hover{transform:translateY(-4px);border-color:rgba(15,77,60,0.25);box-shadow:0 16px 40px rgba(0,0,0,0.06)}
+  .card .ic-box{width:46px;height:46px;border-radius:12px;background:var(--accent-tint);display:flex;align-items:center;justify-content:center;font-size:22px;margin-bottom:18px}
+  .card h3{font-size:19px;font-weight:700;margin-bottom:9px;font-family:'Plus Jakarta Sans';letter-spacing:-0.3px}
   .card p{font-size:14.5px;color:var(--text-2)}
-  .card .tag{position:absolute;top:18px;right:18px;font-size:11px;font-weight:700;color:var(--accent);background:var(--accent-glow);padding:4px 9px;border-radius:6px;letter-spacing:.4px}
+  .card .tag{position:absolute;top:18px;right:18px;font-size:11px;font-weight:700;color:var(--accent);background:var(--accent-tint);padding:4px 9px;border-radius:6px;letter-spacing:.4px}
 
   /* ---------- FUNNEL ---------- */
   .funnel{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;margin-top:10px}
   .stage{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:26px;position:relative}
-  .stage .step{font-family:'JetBrains Mono';font-size:12px;color:var(--accent);font-weight:500;margin-bottom:14px;letter-spacing:1px}
-  .stage h3{font-size:20px;margin-bottom:10px}
+  .stage .step{font-family:'Plus Jakarta Sans';font-size:12px;color:var(--accent);font-weight:700;margin-bottom:14px;letter-spacing:1px}
+  .stage h3{font-size:20px;margin-bottom:10px;font-family:'Plus Jakarta Sans';font-weight:700;letter-spacing:-0.3px}
   .stage p{font-size:14px;color:var(--text-2)}
   .stage .arrow{position:absolute;right:-20px;top:50%;transform:translateY(-50%);color:var(--accent);font-size:22px;z-index:3}
   @media(max-width:980px){.stage .arrow{display:none}}
@@ -138,68 +140,70 @@ const CSS = `  :root{
   /* ---------- TRACKS ---------- */
   .track{
     background:var(--card);border:1px solid var(--border);border-radius:var(--radius);
-    padding:24px 26px;transition:transform .25s,border-color .25s;display:flex;gap:18px;align-items:flex-start;
+    padding:24px 26px;transition:transform .25s,border-color .25s,box-shadow .25s;display:flex;gap:18px;align-items:flex-start;
   }
-  .track:hover{transform:translateY(-3px);border-color:var(--border-2)}
-  .track .no{font-family:'Space Grotesk';font-size:26px;font-weight:700;color:transparent;-webkit-text-stroke:1.2px var(--accent);min-width:42px;line-height:1}
-  .track h3{font-size:18px;font-weight:600;margin-bottom:6px}
+  .track:hover{transform:translateY(-4px);border-color:rgba(15,77,60,0.25);box-shadow:0 16px 40px rgba(0,0,0,0.06)}
+  .track .no{font-family:'Fraunces',serif;font-size:26px;font-weight:600;color:var(--accent);min-width:42px;line-height:1}
+  .track h3{font-size:18px;font-weight:700;margin-bottom:6px;font-family:'Plus Jakarta Sans';letter-spacing:-0.3px}
   .track p{font-size:14px;color:var(--text-2)}
-  .track .access{display:inline-block;margin-top:10px;font-size:12px;color:var(--accent);background:var(--accent-glow);padding:4px 10px;border-radius:6px;font-weight:600}
-  .track.flagship{border-color:rgba(255,178,62,0.4);background:linear-gradient(135deg,rgba(255,178,62,0.07),transparent)}
-  .track.flagship .flag{display:inline-block;margin-top:10px;margin-left:8px;font-size:12px;color:var(--warn);background:rgba(45,212,191,0.12);padding:4px 10px;border-radius:6px;font-weight:600}
+  .track.flagship{border-color:rgba(15,77,60,0.30);background:linear-gradient(135deg,rgba(15,77,60,0.05),transparent)}
+  .track.flagship .flag{display:inline-block;margin-top:10px;font-size:12px;color:var(--accent);background:var(--accent-tint);padding:4px 10px;border-radius:6px;font-weight:700}
 
   /* ---------- PRIZES ---------- */
   .prize-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:18px}
   .prize{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:30px 26px;text-align:center;position:relative}
-  .prize.win{border-color:rgba(255,178,62,0.45);background:linear-gradient(160deg,rgba(255,178,62,0.1),transparent)}
+  .prize.win{border:none;background:linear-gradient(160deg,var(--accent),var(--accent-deep));color:#fff}
   .prize .rank{font-size:12px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--text-2);margin-bottom:12px}
-  .prize.win .rank{color:var(--accent)}
-  .prize .amt{font-family:'Space Grotesk';font-size:40px;font-weight:700;margin-bottom:6px}
+  .prize.win .rank{color:rgba(255,255,255,0.85)}
+  .prize .amt{font-family:'Fraunces',serif;font-size:42px;font-weight:600;margin-bottom:6px}
+  .prize.win .amt.accent{color:#fff}
   .prize .per{font-size:13px;color:var(--muted)}
+  .prize.win .per{color:rgba(255,255,255,0.75)}
   .prize .note{font-size:13.5px;color:var(--text-2);margin-top:14px}
-  .seat-banner{margin-top:22px;background:linear-gradient(135deg,rgba(255,178,62,0.12),rgba(45,212,191,0.08));border:1px solid rgba(255,178,62,0.28);border-radius:var(--radius);padding:26px 28px;display:flex;gap:20px;align-items:center;flex-wrap:wrap}
-  .seat-banner .big{font-family:'Space Grotesk';font-size:21px;font-weight:600;flex:1;min-width:260px}
+  .prize.win .note{color:rgba(255,255,255,0.9)}
+  .seat-banner{margin-top:22px;background:var(--accent-tint);border:1px solid rgba(15,77,60,0.2);border-radius:var(--radius);padding:26px 28px;display:flex;gap:20px;align-items:center;flex-wrap:wrap}
+  .seat-banner .big{font-family:'Fraunces',serif;font-size:21px;font-weight:600;flex:1;min-width:260px}
   .seat-banner .big span{color:var(--accent)}
 
   /* ---------- TIMELINE ---------- */
   .days{display:grid;grid-template-columns:1fr 1fr;gap:22px}
   @media(max-width:760px){.days{grid-template-columns:1fr}}
   .day{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:28px}
-  .day h3{font-size:20px;margin-bottom:4px}
-  .day .date{font-size:13px;color:var(--accent);font-weight:600;margin-bottom:20px;font-family:'JetBrains Mono'}
+  .day h3{font-size:20px;margin-bottom:4px;font-family:'Plus Jakarta Sans';font-weight:700}
+  .day .date{font-size:13px;color:var(--accent);font-weight:700;margin-bottom:20px;font-family:'Plus Jakarta Sans';letter-spacing:.5px}
   .tl{list-style:none}
-  .tl li{display:flex;gap:14px;padding:9px 0;font-size:14.5px;border-bottom:1px solid rgba(255,255,255,0.04)}
+  .tl li{display:flex;gap:14px;padding:9px 0;font-size:14.5px;border-bottom:1px solid var(--border)}
   .tl li:last-child{border-bottom:none}
-  .tl .t{font-family:'JetBrains Mono';font-size:13px;color:var(--accent);min-width:62px;font-weight:500}
+  .tl .t{font-family:'Plus Jakarta Sans';font-size:13px;color:var(--accent);min-width:62px;font-weight:700}
   .tl .e{color:var(--text-2)}
-  .tl .e b{color:var(--text);font-weight:600}
+  .tl .e b{color:var(--text);font-weight:700}
 
   /* ---------- CRITERIA ---------- */
   .crit-list{display:grid;gap:14px}
   .crit{display:flex;gap:14px;align-items:flex-start;background:var(--card);border:1px solid var(--border);border-radius:12px;padding:18px 20px}
-  .crit .w{font-family:'Space Grotesk';font-weight:700;color:var(--accent);font-size:15px;min-width:42px}
-  .crit b{font-weight:600}
+  .crit .w{font-family:'Fraunces',serif;font-weight:600;color:var(--accent);font-size:18px;min-width:46px}
+  .crit b{font-weight:700}
   .crit span{color:var(--text-2);font-size:14px}
 
   /* ---------- FORM ---------- */
-  .form-card{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:36px;max-width:760px;margin:0 auto}
+  .form-card{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:36px;max-width:760px;margin:0 auto;box-shadow:0 20px 60px rgba(0,0,0,0.05)}
   .frow{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px}
   @media(max-width:640px){.frow{grid-template-columns:1fr}}
   .field{display:flex;flex-direction:column;gap:7px;margin-bottom:16px}
-  .field label{font-size:11.5px;text-transform:uppercase;letter-spacing:.7px;font-weight:600;color:var(--text-2)}
+  .field label{font-size:11.5px;text-transform:uppercase;letter-spacing:.7px;font-weight:700;color:var(--text-2)}
   .field label .req{color:var(--accent)}
   .field input,.field select,.field textarea{
-    background:rgba(0,0,0,0.25);border:1px solid var(--border);border-radius:9px;
-    padding:13px 14px;color:var(--text);font-family:'DM Sans';font-size:14.5px;width:100%;transition:border-color .2s,box-shadow .2s;
+    background:#fff;border:1px solid var(--border);border-radius:9px;
+    padding:13px 14px;color:var(--text);font-family:'Plus Jakarta Sans';font-size:14.5px;width:100%;transition:border-color .2s,box-shadow .2s;
   }
-  .field input::placeholder,.field textarea::placeholder{color:var(--muted)}
-  .field input:focus,.field select:focus,.field textarea:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-glow)}
+  .field input::placeholder,.field textarea::placeholder{color:#b8bcc2}
+  .field input:focus,.field select:focus,.field textarea:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-tint)}
   .field textarea{resize:vertical;min-height:74px}
   .field .hint{font-size:12px;color:var(--muted)}
   .check{display:flex;gap:11px;align-items:flex-start;font-size:13.5px;color:var(--text-2);margin-bottom:12px;cursor:pointer}
   .check input{margin-top:3px;accent-color:var(--accent);width:16px;height:16px;flex-shrink:0}
   .form-success{text-align:center;padding:40px 20px;display:none}
-  .form-success .big{font-size:24px;font-family:'Space Grotesk';font-weight:700;margin-bottom:10px}
+  .form-success .big{font-size:26px;font-family:'Fraunces',serif;font-weight:600;margin-bottom:10px}
   .form-success .big .accent{color:var(--accent)}
   .form-success p{color:var(--text-2);max-width:440px;margin:0 auto}
   .form-note{font-size:12.5px;color:var(--muted);text-align:center;margin-top:18px}
@@ -211,7 +215,7 @@ const CSS = `  :root{
   .foot-links{display:flex;gap:22px}
   .foot-links a{font-size:13px;color:var(--text-2);transition:color .2s}
   .foot-links a:hover{color:var(--accent)}
-  .placeholder-flag{background:rgba(45,212,191,0.1);border:1px dashed rgba(45,212,191,0.4);color:var(--warn);font-size:12px;padding:3px 8px;border-radius:5px;font-weight:600;letter-spacing:.3px}
+  .placeholder-flag{background:var(--accent-tint);border:1px dashed rgba(15,77,60,0.4);color:var(--accent);font-size:12px;padding:3px 8px;border-radius:5px;font-weight:700;letter-spacing:.3px}
 `;
 
 type FormState = {
@@ -353,10 +357,10 @@ export default function MedHackPage() {
         <div className="wrap hero">
           <div className="pill"><span className="live" />Applications open · 20 seats only</div>
           <h1>Build real healthcare software.<br /><span className="stroke">Inside a real hospital.</span></h1>
-          <p className="sub">A 30-hour build sprint where elite developers ship production-grade software on the actual hospital floor — talking to the nurses, billing desks and OT teams whose problems they&apos;re solving.</p>
+          <p className="sub">A 30-hour build sprint where developers ship production-grade software on the actual hospital floor — beside the doctors, nurses, billing desks and OT teams whose problems they&apos;re solving.</p>
           <div className="meta-row">
             <div className="meta"><span className="ic">◆</span><span>When</span><b>Sat–Sun, July 25–26</b></div>
-            <div className="meta"><span className="ic">◆</span><span>Where</span><b>Health1, Shilaj · Ahmedabad</b></div>
+            <div className="meta"><span className="ic">◆</span><span>Where</span><b>Health1, Shilaj + a café on SBR</b></div>
             <div className="meta"><span className="ic">◆</span><span>Format</span><b>5 teams × 4 builders</b></div>
           </div>
           <div className="hero-cta">
@@ -377,13 +381,13 @@ export default function MedHackPage() {
           <div className="reveal">
             <div className="eyebrow">Why this isn&apos;t another hackathon</div>
             <h2 className="sec-title">Most hackathons hand you a theme and a pizza. We put you inside a working hospital.</h2>
-            <p className="sec-intro">The prize isn&apos;t a cheque you forget by Monday. It&apos;s a paid build engagement on live product — and a real shot at a founding seat in our new healthtech vertical.</p>
+            <p className="sec-intro">The reward isn&apos;t a cheque you forget by Monday. The strongest teams join our healthtech vertical and carry their work all the way to production — real product, real users.</p>
           </div>
           <div className="grid grid-4">
-            <div className="card reveal"><div className="ic-box">🏥</div><h3>Deep floor access</h3><p>Build beside the people who live the problem — nurses, TPA desks, OT managers, real patients. No other hackathon can put you here.</p></div>
-            <div className="card reveal"><div className="ic-box">💼</div><h3>A seat, not a souvenir</h3><p>Winning teams get a paid build engagement on real Health1 product — flexed to your life: full-time, part-time, or remote.</p></div>
-            <div className="card reveal"><div className="ic-box">🚀</div><h3>A founding shot</h3><p>The standouts get a real path into the core team of our new healthtech vertical. This weekend is the front door.</p></div>
-            <div className="card reveal"><div className="ic-box">💰</div><h3>Cash + portfolio</h3><p>₹1,50,000 in team prizes, plus production code shipped to a real hospital network on your portfolio. Not a throwaway demo.</p></div>
+            <div className="card reveal"><div className="ic-box">🏥</div><h3>Deep floor access</h3><p>Build beside the people who live the problem — doctors, nurses, TPA desks, OT managers and real patients. No other hackathon can put you there.</p></div>
+            <div className="card reveal"><div className="ic-box">🧩</div><h3>Join the vertical</h3><p>Standout teams join our healthtech vertical to take their work to production — flexed to your life: full-time, part-time, or remote.</p></div>
+            <div className="card reveal"><div className="ic-box">🚀</div><h3>Real product, real users</h3><p>You&apos;re not shipping a throwaway demo. The strongest work goes live across a real, growing hospital network.</p></div>
+            <div className="card reveal"><div className="ic-box">💰</div><h3>Cash + portfolio</h3><p>₹1,50,000 in team prizes, plus production code running inside a real hospital on your portfolio.</p></div>
           </div>
         </div>
       </section>
@@ -392,13 +396,13 @@ export default function MedHackPage() {
         <div className="wrap">
           <div className="reveal">
             <div className="eyebrow">The path</div>
-            <h2 className="sec-title">Win the weekend → build for pay → earn the seat.</h2>
-            <p className="sec-intro">The sprint is the audition. The real work — and the real reward — comes after.</p>
+            <h2 className="sec-title">The sprint is the audition. The work is what comes after.</h2>
+            <p className="sec-intro">The weekend is how you prove it. What follows is the real opportunity.</p>
           </div>
           <div className="funnel">
-            <div className="stage reveal"><div className="step">01 / SPRINT</div><h3>The weekend</h3><p>30 hours on the floor. Ship a working build against a real problem. This is how you prove it.</p><div className="arrow">→</div></div>
-            <div className="stage reveal"><div className="step">02 / ENGAGE</div><h3>Paid build engagement</h3><p>Winning teams join real Health1 product on a paid engagement — shaped to fit you: full-time, part-time or remote contract.</p><div className="arrow">→</div></div>
-            <div className="stage reveal"><div className="step">03 / SEAT</div><h3>Founding role</h3><p>Prove yourself on live product and step into the core team of our new healthtech vertical.</p></div>
+            <div className="stage reveal"><div className="step">01 / SPRINT</div><h3>The weekend</h3><p>30 hours on the floor. Ship a working build against a real problem, and prove how you build under pressure.</p><div className="arrow">→</div></div>
+            <div className="stage reveal"><div className="step">02 / PRODUCTION</div><h3>Take it to production</h3><p>The strongest teams keep building with us on live product — on terms that fit your life: full-time, part-time or remote.</p><div className="arrow">→</div></div>
+            <div className="stage reveal"><div className="step">03 / VERTICAL</div><h3>Shape the vertical</h3><p>The very best become part of the core team building our new healthtech vertical.</p></div>
           </div>
         </div>
       </section>
@@ -411,12 +415,12 @@ export default function MedHackPage() {
             <p className="sec-intro">Each team draws one track and builds a working slice on our stack — Next.js + Supabase, deployed live against a sandbox with realistic data. Slideware scores zero.</p>
           </div>
           <div className="grid grid-2">
-            <div className="track reveal"><div className="no">01</div><div><h3>HRMS — Shift &amp; Roster Engine</h3><p>Nurse duty rosters are still built by hand. Build an auto-roster generator with shift rules, clash detection and a leave/attendance dashboard.</p><span className="access">Access: HR head + nursing superintendent</span></div></div>
-            <div className="track reveal"><div className="no">02</div><div><h3>VPMS — Vendor Quote &amp; PO Engine</h3><p>Procurement compares implant and consumable quotes on WhatsApp and paper. Build multi-vendor quote comparison + a PO approval workflow with audit trail.</p><span className="access">Access: purchase &amp; stores</span></div></div>
-            <div className="track reveal"><div className="no">03</div><div><h3>Insurance / RCM — Claim Lifecycle</h3><p>Cashless claims leak money from pre-auth to settlement. Build an end-to-end claim tracker with TAT alerts, denial analytics and short-payment flagging.</p><span className="access">Access: TPA desk + billing</span></div></div>
-            <div className="track reveal"><div className="no">04</div><div><h3>Patient Portal — Self-Service</h3><p>Patients phone the desk for every report and bill. Build a secure portal to book appointments and view reports, prescriptions and bills.</p><span className="access">Access: OPD front office + real patients</span></div></div>
-            <div className="track flagship reveal"><div className="no">05</div><div><h3>HMIS — Integrated Slice (≥4 modules)</h3><p>The flagship. Pick at least 4 of the 25+ HMIS modules and make them work as one connected flow — a patient registered in one module surfaces correctly in billing, pharmacy, lab, discharge. Judged on integration, not polish.</p><span className="access">Access: full hospital workflow</span><span className="flag">Hardest track — strongest signal</span></div></div>
-            <div className="track reveal"><div className="no">06</div><div><h3>Wildcard — Your Idea</h3><p>Bring your own healthtech idea — or spot a real gap on Saturday&apos;s hospital walk and build for that. Either way, pitch it at kickoff for approval. Where the unexpected breakthroughs come from.</p><span className="access">Access: the whole floor</span></div></div>
+            <div className="track reveal"><div className="no">01</div><div><h3>HRMS — Workforce Backbone</h3><p>The backbone of a 24/7 hospital — attendance and biometrics, payroll and statutory compliance, rostering, leave, and the audit trail that has to hold all of it together.</p></div></div>
+            <div className="track reveal"><div className="no">02</div><div><h3>VPMS — Procure-to-Pay</h3><p>Vendor onboarding, quotations, purchase orders, goods receipt and reconciliation — where every rupee and every consumable has to trace back cleanly.</p></div></div>
+            <div className="track reveal"><div className="no">03</div><div><h3>Insurance / RCM — Revenue Cycle</h3><p>Eligibility, pre-authorisation, claims, denials and reconciliation across cashless and reimbursement. The hardest, highest-leverage money problem in Indian healthcare.</p></div></div>
+            <div className="track reveal"><div className="no">04</div><div><h3>Patient Portal — Self-Service</h3><p>Appointments, reports, records, payments and follow-ups — self-service done well enough to actually take load off the front desk.</p></div></div>
+            <div className="track flagship reveal"><div className="no">05</div><div><h3>HMIS — Integrated Core</h3><p>The flagship, and the core hospital operating system — registration, EMR, orders, billing, pharmacy, OT, IPD and OPD. Take a real slice and make the modules talk to each other cleanly. Judged on integration, not polish.</p><span className="flag">Hardest track — strongest signal</span></div></div>
+            <div className="track reveal"><div className="no">06</div><div><h3>Wildcard — Your Idea</h3><p>Bring your own healthtech idea, or find a real gap on Saturday&apos;s hospital floor walk. If it would genuinely move a hospital forward, it belongs here.</p></div></div>
           </div>
         </div>
       </section>
@@ -426,16 +430,16 @@ export default function MedHackPage() {
           <div className="reveal">
             <div className="eyebrow">What you walk away with</div>
             <h2 className="sec-title">Team prizes — because this is a team build.</h2>
-            <p className="sec-intro">Cash opens the door. The engagement and the founding shot are what make the serious builders go all in.</p>
+            <p className="sec-intro">Cash opens the door. The work that follows is what makes the serious builders go all in.</p>
           </div>
           <div className="prize-grid">
-            <div className="prize win reveal"><div className="rank">★ Winning team</div><div className="amt accent">₹1,00,000</div><div className="per">≈ ₹25,000 per builder</div><div className="note">+ paid build engagement on live product + a real shot at the founding team</div></div>
-            <div className="prize reveal"><div className="rank">Runner-up team</div><div className="amt">₹50,000</div><div className="per">≈ ₹12,500 per builder</div><div className="note">+ fast-track interview for the paid engagement</div></div>
+            <div className="prize win reveal"><div className="rank">★ Winning team</div><div className="amt accent">₹1,00,000</div><div className="per">≈ ₹25,000 per builder</div><div className="note">+ first call to join the healthtech vertical and take the work to production</div></div>
+            <div className="prize reveal"><div className="rank">Runner-up team</div><div className="amt">₹50,000</div><div className="per">≈ ₹12,500 per builder</div><div className="note">+ standout teams stay in the conversation</div></div>
             <div className="prize reveal"><div className="rank">Every participant</div><div className="amt" style={{ fontSize: '26px', lineHeight: 1.3 }}>Honorarium<br />+ certificate</div><div className="note">Swag, all meals, and dinner with Health1&apos;s clinical leadership. Nobody leaves empty-handed.</div></div>
           </div>
           <div className="seat-banner reveal">
-            <div className="big">The real prize: <span>a paid build engagement on real product — and a founding shot at our new healthtech vertical.</span></div>
-            <a href="#apply" className="btn btn-primary btn-lg">Claim your seat →</a>
+            <div className="big">The real prize: <span>a place in the healthtech vertical we&apos;re building — taking real product to production.</span></div>
+            <a href="#apply" className="btn btn-primary btn-lg">Apply now →</a>
           </div>
         </div>
       </section>
@@ -445,7 +449,7 @@ export default function MedHackPage() {
           <div className="reveal">
             <div className="eyebrow">How the weekend runs</div>
             <h2 className="sec-title">One continuous sprint. Saturday morning to Sunday dinner.</h2>
-            <p className="sec-intro">Anchored at Health1 Shilaj. Teams who prefer a quieter build can decamp to a café on Sindhu Bhavan Road <span className="placeholder-flag">CAFÉ — TBA</span> during open build hours — back at the hospital for the 5 PM Sunday code freeze.</p>
+            <p className="sec-intro">Anchored at Health1 Shilaj. Teams who prefer a quieter build can decamp to a café on Sindhu Bhavan Road <span className="placeholder-flag">TO BE ANNOUNCED</span> during open build hours — back at the hospital for the 5 PM Sunday code freeze.</p>
           </div>
           <div className="days">
             <div className="day reveal">
@@ -488,7 +492,7 @@ export default function MedHackPage() {
             <div className="crit reveal"><div className="w">40%</div><div><b>Code evidence.</b> <span>Real, shipped, non-trivial work. Commit history, deployed projects, a quality glance. The only honest signal.</span></div></div>
             <div className="crit reveal"><div className="w">20%</div><div><b>Stack relevance.</b> <span>Web-app capable — JS/TS, React/Next, any backend or DB. Exact Next + Supabase not required.</span></div></div>
             <div className="crit reveal"><div className="w">20%</div><div><b>Real-world fit.</b> <span>You think about users and problems, not just tech. Healthcare interest is a plus, not a gate.</span></div></div>
-            <div className="crit reveal"><div className="w">20%</div><div><b>Intent.</b> <span>You actually want the engagement and the vertical — not just a weekend and the cash.</span></div></div>
+            <div className="crit reveal"><div className="w">20%</div><div><b>Intent.</b> <span>You actually want to keep building with us — not just a weekend and the cash.</span></div></div>
           </div>
           <p className="sec-intro" style={{ marginTop: '26px', marginBottom: 0 }}>Pre-formed teams are scored together — but <b style={{ color: 'var(--text)' }}>every member must individually clear the code bar</b>. No carrying dead weight. Solo applicants are placed into balanced teams.</p>
         </div>
@@ -523,17 +527,17 @@ export default function MedHackPage() {
                   <div className="field"><label>Top track preference <span className="req">*</span></label>
                     <select value={form.track_pref} onChange={(e) => set('track_pref', e.target.value)}>
                       <option value="">Select a track…</option>
-                      <option>01 · HRMS — Roster Engine</option>
-                      <option>02 · VPMS — Quote &amp; PO</option>
+                      <option>01 · HRMS — Workforce Backbone</option>
+                      <option>02 · VPMS — Procure-to-Pay</option>
                       <option>03 · Insurance / RCM</option>
                       <option>04 · Patient Portal</option>
-                      <option>05 · HMIS — Integrated Slice</option>
+                      <option>05 · HMIS — Integrated Core</option>
                       <option>06 · Wildcard</option>
                     </select>
                   </div>
                 </div>
                 <div className="field"><label>Hardest thing you&apos;ve ever built — and why it was hard <span className="req">*</span></label><textarea placeholder="≤ 100 words" value={form.hardest_build} onChange={(e) => set('hardest_build', e.target.value)} /></div>
-                <div className="field"><label>Why this engagement / the vertical? <span className="req">*</span></label><textarea placeholder="≤ 100 words" value={form.why} onChange={(e) => set('why', e.target.value)} /></div>
+                <div className="field"><label>Why do you want to be part of this? <span className="req">*</span></label><textarea placeholder="≤ 100 words" value={form.why} onChange={(e) => set('why', e.target.value)} /></div>
                 <div className="field"><label>Team status <span className="req">*</span></label>
                   <select value={form.team_status} onChange={(e) => set('team_status', e.target.value)}>
                     <option value="">Select…</option>
@@ -544,10 +548,10 @@ export default function MedHackPage() {
                 <div className="field"><label>If pre-formed: members + each member&apos;s GitHub</label><textarea placeholder="Name — github.com/handle (one per line)" value={form.team_members} onChange={(e) => set('team_members', e.target.value)} /></div>
 
                 <label className="check"><input type="checkbox" checked={c1} onChange={(e) => setC1(e.target.checked)} /> I&apos;m available for <b style={{ color: 'var(--text)' }}>both days</b>, July 25–26, in Ahmedabad.</label>
-                <label className="check"><input type="checkbox" checked={c2} onChange={(e) => setC2(e.target.checked)} /> I&apos;m open to a <b style={{ color: 'var(--text)' }}>paid build engagement</b> (full-time / part-time / remote) if selected.</label>
+                <label className="check"><input type="checkbox" checked={c2} onChange={(e) => setC2(e.target.checked)} /> I&apos;m open to <b style={{ color: 'var(--text)' }}>joining the healthtech vertical</b> (full-time / part-time / remote) if selected.</label>
                 <label className="check"><input type="checkbox" checked={c3} onChange={(e) => setC3(e.target.checked)} /> I&apos;ll sign the <b style={{ color: 'var(--text)' }}>NDA / IP agreement</b> at the venue.</label>
 
-                {errorMsg && <p style={{ color: '#ff7676', fontSize: '13.5px', marginBottom: '12px', fontWeight: 600 }}>{errorMsg}</p>}
+                {errorMsg && <p style={{ color: '#c0392b', fontSize: '13.5px', marginBottom: '12px', fontWeight: 600 }}>{errorMsg}</p>}
 
                 <button className="btn btn-primary btn-lg" style={{ width: '100%', justifyContent: 'center', marginTop: '10px', opacity: submitting ? 0.7 : 1 }} disabled={submitting} onClick={submitForm}>
                   {submitting ? 'Submitting…' : 'Submit application →'}
