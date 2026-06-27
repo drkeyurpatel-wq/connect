@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { createClient } from '@/lib/supabase/browser';
 
 const CSS = `@import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500;1,9..144,600&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
   :root{
@@ -304,25 +303,40 @@ export default function MedHackPage() {
     }
     setSubmitting(true);
     try {
-      const supabase = createClient();
-      const { error } = await supabase.rpc('mh_submit_application', {
-        p_name: form.name,
-        p_email: form.email,
-        p_phone: form.phone,
-        p_org: form.org,
-        p_github_url: form.github_url,
-        p_portfolio_url: form.portfolio_url,
-        p_project_desc: form.project_desc,
-        p_stack: form.stack,
-        p_track_pref: form.track_pref,
-        p_hardest_build: form.hardest_build,
-        p_why: form.why,
-        p_team_status: form.team_status,
-        p_team_members: form.team_members,
-      });
-      if (error) {
+      const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY as string;
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_SUPABASE_URL}/rest/v1/rpc/mh_submit_application`,
+        {
+          method: 'POST',
+          headers: {
+            apikey: key,
+            Authorization: `Bearer ${key}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            p_name: form.name,
+            p_email: form.email,
+            p_phone: form.phone,
+            p_org: form.org,
+            p_github_url: form.github_url,
+            p_portfolio_url: form.portfolio_url,
+            p_project_desc: form.project_desc,
+            p_stack: form.stack,
+            p_track_pref: form.track_pref,
+            p_hardest_build: form.hardest_build,
+            p_why: form.why,
+            p_team_status: form.team_status,
+            p_team_members: form.team_members,
+          }),
+        }
+      );
+      if (!res.ok) {
         setSubmitting(false);
-        setErrorMsg('Something went wrong submitting. Please try again.');
+        setErrorMsg(
+          res.status === 409
+            ? 'An application already exists for this email.'
+            : 'Something went wrong submitting. Please check your details and try again.'
+        );
         return;
       }
       setSubmitting(false);
@@ -587,4 +601,3 @@ export default function MedHackPage() {
   );
 }
 
-// build: force rebuild to inline NEXT_PUBLIC_SUPABASE_ANON_KEY (20260627T100737Z)
