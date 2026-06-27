@@ -303,9 +303,10 @@ export default function MedHackPage() {
     }
     setSubmitting(true);
     try {
-      const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY as string;
+      const baseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://yqyfmnemvedpqnkfraro.supabase.co';
+      const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'sb_publishable_A6RAsGDwzLH8vPNiOlb8KA_wY8wg5xW';
       const res = await fetch(
-        `${process.env.NEXT_PUBLIC_SUPABASE_URL}/rest/v1/rpc/mh_submit_application`,
+        `${baseUrl}/rest/v1/rpc/mh_submit_application`,
         {
           method: 'POST',
           headers: {
