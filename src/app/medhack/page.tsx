@@ -586,3 +586,5 @@ export default function MedHackPage() {
     </>
   );
 }
+
+// build: force rebuild to inline NEXT_PUBLIC_SUPABASE_ANON_KEY (20260627T100737Z)
