@@ -53,6 +53,7 @@ const CSS = `@import url('https://fonts.googleapis.com/css2?family=Fraunces:ital
   .nav-links{display:flex;align-items:center;gap:28px}
   .nav-links a{color:var(--text-2);font-size:14px;font-weight:600;transition:color .2s}
   .nav-links a:hover{color:var(--accent)}
+  .nav-links a.btn-primary,.nav-links a.btn-primary:hover{color:#fff}
   .btn{
     display:inline-flex;align-items:center;gap:8px;
     font-family:'Plus Jakarta Sans';font-weight:700;font-size:14px;
